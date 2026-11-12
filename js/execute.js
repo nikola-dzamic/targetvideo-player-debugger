@@ -1,21 +1,11 @@
-let bplrNotice = document.getElementById("bplrNotice");
+// Temporary notification messages in the popup.
+const bplrNotice = document.getElementById("bplrNotice");
+let bplrNoticeTimer = null;
 
-document.getElementById("clearBplrLocalStorage").addEventListener("click", function () {
-    bplrNotice.innerHTML = "Local Storage cleared!";
-    setTimeout(function(){bplrNotice.innerHTML = "";},3000);
-});
-
-document.getElementById("bplrPlayerInfo").addEventListener("click", function () {
-    bplrNotice.innerHTML = "Check browser console for details.";
-    setTimeout(function(){bplrNotice.innerHTML = "";},3000);
-});
-
-document.getElementById("playerInfoEmbed").addEventListener("click", function () {
-    bplrNotice.innerHTML = "Check table for details.";
-    setTimeout(function(){bplrNotice.innerHTML = "";},3000);
-});
-
-document.getElementById("enableDebug").addEventListener("click", function () {
-    bplrNotice.innerHTML = "Debug mode enabled/disabled!";
-    setTimeout(function(){bplrNotice.innerHTML = "";},3000);
-});
+function showNotice(text) {
+  bplrNotice.textContent = text;
+  clearTimeout(bplrNoticeTimer);
+  bplrNoticeTimer = setTimeout(function () {
+    bplrNotice.textContent = "";
+  }, 3000);
+}

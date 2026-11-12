@@ -1,0 +1,93 @@
+:root {
+  --targetvideo-extension-accent-color-2: #38ee7d;
+  --targetvideo-extension-gradient-color: linear-gradient(90deg, var(--targetvideo-extension-accent-color) 0%, var(--targetvideo-extension-accent-color-2) 100%);
+}
+
+body {
+  font-family: 'Montserrat', sans-serif !important;
+  background-color: #f1f1fa;
+  width: 350px;
+  color: var(--targetvideo-extension-text-color);
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  background: var(--targetvideo-extension-gradient-color);
+  border-radius: 6px;
+}
+
+.header img {
+  width: 200px;
+  height: 50px;
+}
+
+.bplrText {
+  margin-top: 10px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sectionLabel {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b6b80;
+}
+
+.sectionLabel + .buttons {
+  margin-top: 5px;
+}
+
+.button {
+  font-family: inherit;
+  height: 30px;
+  border-radius: 6px;
+  border-style: solid;
+  border-width: 0;
+  text-align: center;
+  text-decoration: none;
+  background: var(--targetvideo-extension-gradient-color);
+  color: #ffffff;
+  cursor: pointer;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.button:hover:not(:disabled),
+.button:focus-visible {
+  filter: brightness(1.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Keyboard focus only; mouse clicks don't show the ring. */
+.button:focus-visible {
+  outline: 2px solid var(--targetvideo-extension-accent-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+
+  .button:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.button:active:not(:disabled) {
+  transform: scale(0.98);
+  box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+}

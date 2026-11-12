@@ -1,5 +1,5 @@
 if (typeof BPLR === "undefined" && typeof Brid === "undefined") {
-    console.log("No BPLR or Brid players found on page. If the BPLR or Brid player is in an iframe, this debug script will not be able to give you debug data for the player.");
+    console.log("No TargetVideo player found on this page. If the player is in an iframe, this debug script can't read its data.");
 } else {
     if (typeof playerDivs === "undefined" || document.querySelector('table.infoTable') === null) {
         playerDivs = [];
@@ -24,13 +24,33 @@ if (typeof BPLR === "undefined" && typeof Brid === "undefined") {
 function createTable(playerDivs) {
     let table = Object.assign(document.createElement('table'), {
         className: "infoTable",
-        width: `${playerDivs.clientWidth}`
+        width: `${playerDivs.clientWidth}px !important`
     });
-    
+
+    let group = null;
+
+    // Starts a new group: a narrow side cell with the group name, spanning all of its rows.
+    function startGroup(name) {
+        table.lastElementChild?.classList.add("infoTableGroupEnd");
+
+        group = {
+            cell: Object.assign(document.createElement('td'), { className: "infoTableGroup" }),
+            rows: 0
+        };
+        group.cell.appendChild(Object.assign(document.createElement('div'), {
+            innerText: name
+        }));
+    }
+
     function createRow(cell1, cell2) {
         let td = document.createElement('td');
         let tr = document.createElement('tr');
-        
+
+        if (group) {
+            if (group.rows === 0) tr.appendChild(group.cell);
+            group.cell.rowSpan = ++group.rows;
+        }
+
         tr.appendChild(Object.assign(document.createElement('td'), {
             innerText: cell1,
             width: `${playerDivs.clientWidth/4}`
@@ -47,16 +67,17 @@ function createTable(playerDivs) {
                 tr.appendChild(td);
                 break;
             case "Renditions:":
-                if (cell2 === "/") {
+            case "Plugins:":
+            case "Ad types:":
+            case "Waits for consent:":
+                if (cell2 === "/" || cell2.length === 0) {
                     tr.appendChild(Object.assign(document.createElement('td'), {
-                        innerText: cell2
+                        innerText: "/"
                     }));
                 } else {
-                    let renditions = cell2
-                    
-                    renditions.forEach(rendition => {
+                    cell2.forEach(item => {
                         td.appendChild(Object.assign(document.createElement('span'), {
-                            innerText: rendition
+                            innerText: item
                         }));
                     });
                     
@@ -109,23 +130,48 @@ function createTable(playerDivs) {
         table.appendChild(tr);
     }
     
+    startGroup("Account");
     createRow(`Partner domain:`, $bp(playerDivs.id).config.Partner.domain_short);
-    createRow(`Video origin:`, $bp(playerDivs.id).currentSource.origin_video || "/");
     createRow(`Partner ID:`, $bp(playerDivs.id).config.partner_id);
     createRow(`User ID:`, $bp(playerDivs.id).config.Partner.user_id);
+
+    startGroup("Player");
     createRow(`Player ID:`, $bp(playerDivs.id).config.id);
     createRow(`Player template ID:`, $bp(playerDivs.id).config.player_template_id);
-    createRow(`Video ID:`, $bp(playerDivs.id).currentSource.id);
-    createRow(`Playlist ID:`, $bp(playerDivs.id).config.Playlist?.id || $bp(playerDivs.id).config.playlist || "/");
-    createRow(`Ad schedule ID:`, $bp(playerDivs.id).config.ad_schedule_id || "/");
     createRow(`Div ID:`, $bp(playerDivs.id).id);
-    createRow(`Start volume:`, `${$bp(playerDivs.id).config.start_volume}%`);
-    createRow(`Mime type:`, $bp(playerDivs.id).currentSource.mimeType);
-    createRow(`Renditions:`, Object.keys($bp().currentSource.source));
     createRow(`Mode:`, $bp(playerDivs.id).config.mode);
+    createRow(`Player size:`, `${$bp(playerDivs.id).config.width} x ${$bp(playerDivs.id).config.height}`);
+    createRow(`Start volume:`, `${$bp(playerDivs.id).config.start_volume}%`);
+    createRow(`Plugins:`, ($bp(playerDivs.id).config.Plugin || []).map(plugin => plugin?.id ?? plugin));
+
+    startGroup("Content");
+    createRow(`Playlist ID:`, $bp(playerDivs.id).config.Playlist?.id || $bp(playerDivs.id).config.playlist || "/");
+    createRow(`Video ID:`, $bp(playerDivs.id).currentSource.id);
+    createRow(`Video origin:`, $bp(playerDivs.id).currentSource.origin_video || "/");
+    createRow(`Mime type:`, $bp(playerDivs.id).currentSource.mimeType);
+    createRow(`Renditions:`, Object.keys($bp(playerDivs.id).currentSource.source || {}) || "/");
+
+    startGroup("Ads");
+    createRow(`Monetize:`, $bp(playerDivs.id).config.monetize);
+    createRow(`Ad SDK:`, $bp(playerDivs.id).config.adSDK || "/");
+    createRow(`Ad schedule ID:`, $bp(playerDivs.id).config.ad_schedule_id || "/");
+    createRow(`Ad schedule ID (Video):`, $bp(playerDivs.id).currentSource.ad_schedule_id || "/");
+    createRow(`Ad types:`, [
+        ["Pre-roll", $bp(playerDivs.id).hasPreroll],
+        ["Mid-roll", $bp(playerDivs.id).hasMidroll],
+        ["Post-roll", $bp(playerDivs.id).hasPostroll],
+        ["Overlay", $bp(playerDivs.id).hasOverlay],
+        ["Banner", $bp(playerDivs.id).hasBanner]
+    ].filter(([, on]) => on).map(([name]) => name));
+    createRow(`Waits for consent:`, [
+        ["TCF", $bp(playerDivs.id).config.wait_tcf_api],
+        ["GPP", $bp(playerDivs.id).config.wait_gpp_api]
+    ].filter(([, on]) => on).map(([name]) => name));
+
+    // Long values last, so they don't push the short rows down
+    startGroup("Details");
     createRow(`Tags:`, $bp(playerDivs.id).currentSource.tags || "/");
     createRow(`IAB categories:`, $bp(playerDivs.id).currentSource.iab_categories || "/");
-    createRow(`Player size:`, `${$bp(playerDivs.id).config.width} x ${$bp(playerDivs.id).config.height}`);
     createRow(`JSON:`, getJsonUrl(playerDivs));
     
     return table;

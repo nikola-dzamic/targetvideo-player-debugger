@@ -1,24 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="stylesheet" href="css/page-style.css" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="css/popup.css" />
+    <link rel="stylesheet" href="css/info-table.css" />
   </head>
-  <body style="width: 400px">
+  <body>
     <div class="header">
-      <img id="login-logo-theme" style="width: 200px; height: 50px;" src="./images/logo.svg" alt="TargetVideo logo"/>
+      <img id="login-logo-theme" src="./images/logo.svg" alt="TargetVideo Logo"/>
     </div>
     
-    <div class="bplrText">Get TargetVideo player debug info below.</div>
+    <div id="bplrStatus" class="bplrText">Checking this page…</div>
     
-    <button class="button bplrSmall" id="bplrPlayerInfo" title="Get player info logged in console.">Player Info</button>
-    <button class="button bplrBig" id="playerInfoEmbed" title="Get player info displayed above player.">Player Info (Embed)</button>
-    <button class="button bplrSmall" id="enableDebug" title="Enable/Disable debug mode.">Enable Debug</button>
-    <button class="button bplrBig" id="clearBplrLocalStorage" title="Clear local storage.">Clear Local Storage</button>
+    <div class="sectionLabel">Player info</div>
+    <div class="buttons">
+      <button class="button" id="bplrPlayerInfo" title="Log player details to the console (F12)">Log to console</button>
+      <button class="button" id="playerInfoEmbed" title="Add an info table above each player">Show on page</button>
+    </div>
+    
+    <div class="sectionLabel">Tools</div>
+    <div class="buttons">
+      <button class="button" id="enableDebug" title="Turn on debug mode and reload">Enable debug</button>
+      <button class="button" id="clearBplrLocalStorage" title="Clear all local storage for this site">Clear local storage</button>
+    </div>
     
     <div id="bplrNotice" class="bplrText"></div>
     
-    <script src="js/popup.js"></script>
     <script src="js/execute.js"></script>
+    <script src="js/popup.js"></script>
   </body>
 </html>
