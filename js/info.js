@@ -21,7 +21,7 @@ for (i = 0; i < frames.length; ++i)
 */
 
 // Same player divs as playerInfoEmbed.js. `var` (not const/let) so injecting this script again doesn't throw a redeclaration error.
-var bplrPlayerSelector = 'div[id^=TargetVideo_].bplr, div[id^=Brid_].bplr, div[id^=TargetVideo_].brid, div[id^=Brid_].brid, div[id^=Step-network_].bplr, div[id^=Step-network_].brid, div#BPLR_Single_Embed.bplr, div#Brid_Single_Embed.brid';
+var bplrPlayerSelector = 'div[id^=TargetVideo_].bplr, div[id^=Brid_].bplr, div[id^=TargetVideo_].brid, div[id^=Brid_].brid, div[id^=Step-network_].bplr, div[id^=Step-network_].brid, div#BPLR_Single_Embed.bplr, div#Brid_Single_Embed.brid, div[id^=Player_].bplr, div[id^=bplr-shorts-player-].bplr';
 var bplrAccent = "color:#11988d;font-weight:bold;";
 
 // TODO: Add support here for players located in friendly iframes. This is gonna be sex.
@@ -160,6 +160,8 @@ function bplrGetJsonUrl(player) {
     case "latest":
       return `${urlEnv}${urlConfig}/0/1/25/0.json`;
     case "widget":
+      // Vertical lightbox players have no widget ID (config.playlist holds the videos instead).
+      if (!config.playlist?.id) return "Not able to get JSON url.";
       return `${urlEnv}${urlConfig}/${config.playlist.id}/1/25.json`;
     case "config":
       return `${urlEnv}video/${config.id}/${player.currentSource.id}.json`;

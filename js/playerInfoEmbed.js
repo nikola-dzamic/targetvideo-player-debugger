@@ -3,30 +3,48 @@ if (typeof BPLR === "undefined" && typeof Brid === "undefined") {
 } else {
     if (typeof playerDivs === "undefined" || document.querySelector('table.infoTable') === null) {
         playerDivs = [];
-        
+
         if ($bp().config.mode === "widget") {
             playerDivs = document.querySelectorAll('div[class$=-playlist-widget], div[class$=-mid-article-widget], div[class$=-native-widget], div[class$=-simple-widget-wrapper-main]');
-        } else {
-            playerDivs = document.querySelectorAll('div[id^=TargetVideo_].bplr, div[id^=Brid_].bplr, div[id^=TargetVideo_].brid, div[id^=Brid_].brid, div[id^=Step-network_].bplr, div[id^=Step-network_].brid, div#BPLR_Single_Embed.bplr, div#Brid_Single_Embed.brid');
         }
-        
-        playerDivs.forEach(playerDivs => {
-            let playerDivsParent = playerDivs.parentElement;
-            
-            playerDivsParent.insertBefore(createTable(playerDivs), playerDivs);
-            playerDivsParent.insertBefore(document.createElement('br'), playerDivs);
+
+        // Not a widget, or a lightbox widget (not in the list above), whose player only exists once a video is opened.
+        if (playerDivs.length === 0) {
+            playerDivs = document.querySelectorAll('div[id^=TargetVideo_].bplr, div[id^=Brid_].bplr, div[id^=TargetVideo_].brid, div[id^=Brid_].brid, div[id^=Step-network_].bplr, div[id^=Step-network_].brid, div#BPLR_Single_Embed.bplr, div#Brid_Single_Embed.brid, div[id^=Player_].bplr, div[id^=bplr-shorts-player-].bplr');
+        }
+
+        playerDivs.forEach(playerDiv => {
+            let anchor = getTableAnchor(playerDiv);
+
+            anchor.parentElement.insertBefore(createTable(playerDiv, anchor.clientWidth), anchor);
+            anchor.parentElement.insertBefore(document.createElement('br'), anchor);
         });
     } else {
         console.log("Script already run! Exiting gracefully.");
     }
 }
 
-function createTable(playerDivs) {
+// Where the table goes. Lightbox players play in an overlay, so their table goes above the widget on the page instead.
+function getTableAnchor(playerDiv) {
+    let widget = null;
+
+    if (playerDiv.id.startsWith("bplr-shorts-player-")) {
+        // Vertical lightbox: the player ID ends with the widget div's ID (bplr-shorts-player-TargetVideo_123).
+        widget = document.getElementById(playerDiv.id.replace("bplr-shorts-player-", ""));
+    } else if (playerDiv.id.startsWith("Player_")) {
+        // Standard lightbox: Player_<widget ID>, and the widget's own elements use widget-<widget ID>-lightbox-* classes.
+        widget = document.querySelector(`[class^="widget-${playerDiv.id.slice("Player_".length)}-lightbox"]`)?.closest("div[id^=TargetVideo_], div[id^=Brid_]");
+    }
+
+    return widget || playerDiv;
+}
+
+function createTable(playerDivs, tableWidth) {
     let table = Object.assign(document.createElement('table'), {
         className: "infoTable"
     });
     // Inline !important, so the site's CSS can't override the width. (The HTML width attribute can't take !important.)
-    table.style.setProperty("width", `${playerDivs.clientWidth}px`, "important");
+    table.style.setProperty("width", `${tableWidth}px`, "important");
 
     let group = null;
 
@@ -54,7 +72,7 @@ function createTable(playerDivs) {
 
         tr.appendChild(Object.assign(document.createElement('td'), {
             innerText: cell1,
-            width: `${playerDivs.clientWidth/4}`
+            width: `${tableWidth/4}`
         }));
         
         switch (cell1) {
@@ -194,6 +212,8 @@ function getJsonUrl (playerDivs) {
         case "latest":
             return `${urlEnv}${urlConfig}/0/1/25/0.json`
         case "widget":
+            // Vertical lightbox players have no widget ID (config.playlist holds the videos instead).
+            if (!$bp(playerDivs.id).config.playlist?.id) return "Not able to get JSON url."
             return `${urlEnv}${urlConfig}/${$bp(playerDivs.id).config.playlist.id}/1/25.json`
         case "config":
             return `${urlEnv}video/${$bp(playerDivs.id).config.id}/${$bp(playerDivs.id).currentSource.id}.json`

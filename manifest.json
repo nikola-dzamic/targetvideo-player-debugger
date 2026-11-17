@@ -9,7 +9,8 @@
         "js/info.js",
         "js/playerInfoEmbed.js",
         "css/info-table.css",
-        "js/enableDebug.js"
+        "js/enableDebug.js",
+        "js/widgetInfo.js"
       ],
       "matches": ["<all_urls>"]
     }],
