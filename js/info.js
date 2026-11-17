@@ -75,7 +75,9 @@ function bplrLogPlayer(player, number) {
     } else {
       let sd = video.source?.sd || "";
       let contentRows = [
-        ["Playlist ID:", config.Playlist?.id || config.playlist?.id || config.playlist || "/"],
+        ...(config.mode === "widget" ? [["Widget ID:", config.playlist?.id || "/"]] : []),
+        // In widget mode config.playlist is an object holding the widget ID, not the playlist ID, so skip it.
+        ["Playlist ID:", config.Playlist?.id || (typeof config.playlist === "object" ? "" : config.playlist) || "/"],
         ["Video ID:", video.id],
         ["Video origin:", video.origin_video || "/"],
         ["Hosted:", sd.includes("cdn.bplr.tv") ? "internally" : "externally"],

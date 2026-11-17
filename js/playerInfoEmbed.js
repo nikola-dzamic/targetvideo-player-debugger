@@ -23,9 +23,10 @@ if (typeof BPLR === "undefined" && typeof Brid === "undefined") {
 
 function createTable(playerDivs) {
     let table = Object.assign(document.createElement('table'), {
-        className: "infoTable",
-        width: `${playerDivs.clientWidth}px !important`
+        className: "infoTable"
     });
+    // Inline !important, so the site's CSS can't override the width. (The HTML width attribute can't take !important.)
+    table.style.setProperty("width", `${playerDivs.clientWidth}px`, "important");
 
     let group = null;
 
@@ -145,7 +146,11 @@ function createTable(playerDivs) {
     createRow(`Plugins:`, ($bp(playerDivs.id).config.Plugin || []).map(plugin => plugin?.id ?? plugin));
 
     startGroup("Content");
-    createRow(`Playlist ID:`, $bp(playerDivs.id).config.Playlist?.id || $bp(playerDivs.id).config.playlist || "/");
+    if ($bp(playerDivs.id).config.mode === "widget") {
+        createRow(`Widget ID:`, $bp(playerDivs.id).config.playlist?.id || "/");
+    }
+    // In widget mode config.playlist is an object holding the widget ID, not the playlist ID, so skip it.
+    createRow(`Playlist ID:`, $bp(playerDivs.id).config.Playlist?.id || (typeof $bp(playerDivs.id).config.playlist === "object" ? "" : $bp(playerDivs.id).config.playlist) || "/");
     createRow(`Video ID:`, $bp(playerDivs.id).currentSource.id);
     createRow(`Video origin:`, $bp(playerDivs.id).currentSource.origin_video || "/");
     createRow(`Mime type:`, $bp(playerDivs.id).currentSource.mimeType);
