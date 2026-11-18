@@ -15,7 +15,7 @@ function bplrGetPageState() {
   const playerSelector =
     "div[id^=TargetVideo_].bplr, div[id^=Brid_].bplr, div[id^=TargetVideo_].brid, div[id^=Brid_].brid, " +
     "div[id^=Step-network_].bplr, div[id^=Step-network_].brid, div#BPLR_Single_Embed.bplr, div#Brid_Single_Embed.brid, " +
-    "div[id^=Player_].bplr, div[id^=bplr-shorts-player-].bplr";
+    "div[id^=Player_].bplr, div[id^=bplr-shorts-player-].bplr, div[id^=bplr_].bplr";
   const widgetSelector =
     "div[class$=-playlist-widget], div[class$=-mid-article-widget], div[class$=-native-widget], div[class$=-simple-widget-wrapper-main]";
 

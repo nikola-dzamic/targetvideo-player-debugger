@@ -10,7 +10,7 @@ if (typeof BPLR === "undefined" && typeof Brid === "undefined") {
 
         // Not a widget, or a lightbox widget (not in the list above), whose player only exists once a video is opened.
         if (playerDivs.length === 0) {
-            playerDivs = document.querySelectorAll('div[id^=TargetVideo_].bplr, div[id^=Brid_].bplr, div[id^=TargetVideo_].brid, div[id^=Brid_].brid, div[id^=Step-network_].bplr, div[id^=Step-network_].brid, div#BPLR_Single_Embed.bplr, div#Brid_Single_Embed.brid, div[id^=Player_].bplr, div[id^=bplr-shorts-player-].bplr');
+            playerDivs = document.querySelectorAll('div[id^=TargetVideo_].bplr, div[id^=Brid_].bplr, div[id^=TargetVideo_].brid, div[id^=Brid_].brid, div[id^=Step-network_].bplr, div[id^=Step-network_].brid, div#BPLR_Single_Embed.bplr, div#Brid_Single_Embed.brid, div[id^=Player_].bplr, div[id^=bplr-shorts-player-].bplr, div[id^=bplr_].bplr');
         }
 
         playerDivs.forEach(playerDiv => {
